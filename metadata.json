@@ -1,0 +1,8 @@
+{
+  "name": "Clinical Field App",
+  "description": "High-precision territory routing, clinic intelligence, and sample management for pharmaceutical and medical device field representatives in Singapore.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
