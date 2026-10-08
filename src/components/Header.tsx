@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="text-left group cursor-pointer focus:outline-hidden"
           >
             <div className="text-lg font-bold tracking-tight text-[#131b2e] group-hover:text-[#00685f] transition-colors leading-tight">
-              Clinical Field Precision
+              Clinical Field App
             </div>
             <div className="text-[11px] text-[#3d4947] tracking-wider uppercase font-semibold">
               Singapore Medical Rep Suite

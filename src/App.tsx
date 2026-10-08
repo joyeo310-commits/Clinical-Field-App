@@ -116,7 +116,11 @@ export default function App() {
             }
             return p;
           });
-          return { ...c, products: updatedProds };
+          const updatedClinic = { ...c, products: updatedProds };
+          if (selectedClinic?.id === clinicId) {
+            setSelectedClinic(updatedClinic);
+          }
+          return updatedClinic;
         }
         return c;
       })
@@ -167,10 +171,14 @@ export default function App() {
     setClinics(prev =>
       prev.map(c => {
         if (c.id === clinicId) {
-          return {
+          const updatedClinic = {
             ...c,
             visitHistory: [newRecord, ...c.visitHistory],
           };
+          if (selectedClinic?.id === clinicId) {
+            setSelectedClinic(updatedClinic);
+          }
+          return updatedClinic;
         }
         return c;
       })
