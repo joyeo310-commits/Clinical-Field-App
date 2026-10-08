@@ -12,6 +12,7 @@ import { RoutePlanner } from './components/RoutePlanner';
 import { SampleBagManager } from './components/SampleBagManager';
 import { ClinicDetailModal } from './components/ClinicDetailModal';
 import { VisitLogModal } from './components/VisitLogModal';
+import { AddClinicModal } from './components/AddClinicModal';
 import { QuickToast } from './components/QuickToast';
 import { 
   Search, 
@@ -23,11 +24,29 @@ import {
   X,
   Stethoscope,
   Sparkles,
-  PhoneCall
+  PhoneCall,
+  Plus,
+  Compass,
+  Building,
+  CheckCircle2
 } from 'lucide-react';
 
 export default function App() {
-  const [clinics, setClinics] = useState<Clinic[]>(INITIAL_CLINICS);
+  const [clinics, setClinics] = useState<Clinic[]>(() => {
+    try {
+      const saved = localStorage.getItem('sg_clinics_territory_v2');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const customClinics = parsed.filter((c: any) => c.id && c.id.startsWith('clinic-custom-'));
+          return [...INITIAL_CLINICS, ...customClinics];
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return INITIAL_CLINICS;
+  });
   const [routeStops, setRouteStops] = useState<RouteStop[]>(INITIAL_TODAY_ROUTE);
   const [bagSamples, setBagSamples] = useState<BagSampleItem[]>(INITIAL_BAG_SAMPLES);
   
@@ -42,12 +61,27 @@ export default function App() {
   // Modals & Popovers
   const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
   const [visitLogClinic, setVisitLogClinic] = useState<Clinic | null>(null);
+  const [isAddClinicOpen, setIsAddClinicOpen] = useState(false);
+  const [addClinicInitialName, setAddClinicInitialName] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const completedStops = routeStops.filter(s => s.status === 'COMPLETED').length;
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
+  };
+
+  // Add new clinic to state and persist
+  const handleAddClinic = (newClinic: Clinic) => {
+    setClinics(prev => {
+      const updated = [newClinic, ...prev];
+      try {
+        localStorage.setItem('sg_clinics_territory_v2', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+    setSelectedClinic(newClinic);
+    showToast(`Added "${newClinic.name}" (${newClinic.region}) to your Singapore directory.`);
   };
 
   // Toggle clinic in/out of today's route
@@ -246,32 +280,78 @@ export default function App() {
     showToast('Route re-ordered: Novena clusters sequenced first to reduce CTE peak transit.');
   };
 
-  // Filter clinics for directory feed
+  // Helper to test if a clinic matches a search query across any field
+  const checkClinicMatchesQuery = (clinic: Clinic, query: string) => {
+    if (!query) return true;
+    const q = query.toLowerCase().trim();
+    const matchesName = clinic.name.toLowerCase().includes(q);
+    const matchesBuilding = clinic.building.toLowerCase().includes(q);
+    const matchesAddress = clinic.address.toLowerCase().includes(q);
+    const matchesPostal = clinic.postalCode.includes(q);
+    const matchesTown = clinic.town.toLowerCase().includes(q);
+    const matchesRegion = 
+      clinic.region.toLowerCase().includes(q) ||
+      (q.includes('north-east') && clinic.region === 'North-East') ||
+      (q.includes('northeast') && clinic.region === 'North-East') ||
+      (q === 'north' && clinic.region === 'North') ||
+      (q.includes('east') && (clinic.region === 'East' || clinic.region === 'North-East')) ||
+      (q.includes('west') && clinic.region === 'West') ||
+      (q.includes('central') && clinic.region === 'Central');
+    const matchesMrt = clinic.mrtStation.toLowerCase().includes(q);
+    const matchesType = clinic.clinicType.toLowerCase().includes(q);
+    const matchesDoctor = clinic.doctors.some(
+      d =>
+        d.name.toLowerCase().includes(q) ||
+        d.specialty.toLowerCase().includes(q) ||
+        d.mcrNumber.toLowerCase().includes(q)
+    );
+    const matchesProduct = clinic.products.some(p => 
+      p.name.toLowerCase().includes(q) || 
+      p.genericName.toLowerCase().includes(q) ||
+      p.therapeuticArea.toLowerCase().includes(q)
+    );
+
+    return (
+      matchesName || 
+      matchesBuilding || 
+      matchesAddress || 
+      matchesPostal || 
+      matchesTown || 
+      matchesRegion || 
+      matchesMrt || 
+      matchesType ||
+      matchesDoctor || 
+      matchesProduct
+    );
+  };
+
+  const queryTrimmed = searchQuery.trim();
+  const islandWideMatchingClinics = queryTrimmed 
+    ? clinics.filter(c => checkClinicMatchesQuery(c, queryTrimmed))
+    : clinics;
+
+  // Filter clinics for directory feed:
+  // If user is searching and selectedHub is set, check if results exist in selectedHub.
   const filteredClinics = clinics.filter(clinic => {
-    // Search query matching clinic name, doctor, specialty, building, postal code
-    const query = searchQuery.toLowerCase().trim();
-    if (query) {
-      const matchesName = clinic.name.toLowerCase().includes(query);
-      const matchesBuilding = clinic.building.toLowerCase().includes(query);
-      const matchesPostal = clinic.postalCode.includes(query);
-      const matchesDoctor = clinic.doctors.some(
-        d =>
-          d.name.toLowerCase().includes(query) ||
-          d.specialty.toLowerCase().includes(query) ||
-          d.mcrNumber.toLowerCase().includes(query)
-      );
-      const matchesProduct = clinic.products.some(p => p.name.toLowerCase().includes(query));
-      if (!matchesName && !matchesBuilding && !matchesPostal && !matchesDoctor && !matchesProduct) {
+    // 1. Search Query check
+    if (queryTrimmed) {
+      if (!checkClinicMatchesQuery(clinic, queryTrimmed)) {
         return false;
       }
     }
 
-    // Hub filter
-    if (selectedHub !== 'ALL' && clinic.hub !== selectedHub) {
-      return false;
+    // 2. Regional Filter Tabs
+    if (selectedHub !== 'ALL') {
+      const matchesRegion = 
+        clinic.region === selectedHub || 
+        clinic.hub.includes(selectedHub) || 
+        clinic.town.toLowerCase() === selectedHub.toLowerCase();
+      if (!matchesRegion) {
+        return false;
+      }
     }
 
-    // Status filter
+    // 3. Status filter
     if (statusFilter === 'ACTIVE_NOW' && clinic.status !== 'VISITING_WINDOW_ACTIVE') {
       return false;
     }
@@ -302,8 +382,8 @@ export default function App() {
         {activeTab === 'feed' && (
           <div className="space-y-6">
             {/* Search and Tactical Filter Bar */}
-            <div className="bg-[#ffffff] border border-[#e2e7ff] rounded-xl p-4 sm:p-5 shadow-xs space-y-3.5">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="bg-[#ffffff] border border-[#e2e7ff] rounded-xl p-4 sm:p-5 shadow-xs space-y-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
                 {/* Search Input Box */}
                 <div className="relative flex-1">
                   <Search className="w-4 h-4 text-[#6d7a77] absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -311,7 +391,7 @@ export default function App() {
                     type="text"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
-                    placeholder="Search Singapore clinic, specialist name, MCR#, postal code (e.g. 329565, Royal Square, Dr. Tan)..."
+                    placeholder="Search any Singapore clinic, hospital, building, town, postal code, doctor..."
                     className="w-full min-h-[44px] pl-10 pr-9 py-2 bg-[#f8faff] border border-[#bcc9c6] rounded-lg text-xs sm:text-sm text-[#131b2e] placeholder-[#6d7a77] focus:outline-hidden focus:border-[#00685f]"
                   />
                   {searchQuery && (
@@ -324,69 +404,163 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Hub Segmented Controls (Functional buttons per Zero-Pill rule) */}
-                <div className="flex items-center gap-1 overflow-x-auto p-1 bg-[#f2f3ff] rounded-lg text-xs shrink-0">
+                {/* Add Clinic Action Button */}
+                <button
+                  onClick={() => {
+                    setAddClinicInitialName(searchQuery.trim());
+                    setIsAddClinicOpen(true);
+                  }}
+                  className="min-h-[44px] px-4 py-2 bg-[#00685f] hover:bg-[#005048] text-white rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer shrink-0 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Clinic</span>
+                </button>
+              </div>
+
+              {/* Singapore 5 Planning Regions Segmented Controls */}
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex items-center gap-1 overflow-x-auto p-1 bg-[#f2f3ff] rounded-lg text-xs max-w-full shrink-0">
                   <button
                     onClick={() => setSelectedHub('ALL')}
-                    className={`min-h-[38px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+                    className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
                       selectedHub === 'ALL'
                         ? 'bg-white text-[#00685f] shadow-xs'
                         : 'text-[#3d4947] hover:text-[#131b2e]'
                     }`}
                   >
-                    All Hubs
+                    All Island
                   </button>
                   <button
-                    onClick={() => setSelectedHub('Novena Hub')}
-                    className={`min-h-[38px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
-                      selectedHub === 'Novena Hub'
+                    onClick={() => setSelectedHub('Central')}
+                    className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+                      selectedHub === 'Central'
                         ? 'bg-white text-[#00685f] shadow-xs'
                         : 'text-[#3d4947] hover:text-[#131b2e]'
                     }`}
                   >
-                    Novena Hub
+                    Central
                   </button>
                   <button
-                    onClick={() => setSelectedHub('Orchard / Tanglin')}
-                    className={`min-h-[38px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
-                      selectedHub === 'Orchard / Tanglin'
+                    onClick={() => setSelectedHub('North')}
+                    className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+                      selectedHub === 'North'
                         ? 'bg-white text-[#00685f] shadow-xs'
                         : 'text-[#3d4947] hover:text-[#131b2e]'
                     }`}
                   >
-                    Orchard
+                    North
                   </button>
                   <button
-                    onClick={() => setSelectedHub('Heartlands East')}
-                    className={`min-h-[38px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
-                      selectedHub === 'Heartlands East'
+                    onClick={() => setSelectedHub('North-East')}
+                    className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+                      selectedHub === 'North-East'
                         ? 'bg-white text-[#00685f] shadow-xs'
                         : 'text-[#3d4947] hover:text-[#131b2e]'
                     }`}
                   >
-                    East Coast
+                    North-East
                   </button>
                   <button
-                    onClick={() => setSelectedHub('Heartlands West')}
-                    className={`min-h-[38px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
-                      selectedHub === 'Heartlands West'
+                    onClick={() => setSelectedHub('East')}
+                    className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+                      selectedHub === 'East'
                         ? 'bg-white text-[#00685f] shadow-xs'
                         : 'text-[#3d4947] hover:text-[#131b2e]'
                     }`}
                   >
-                    Jurong West
+                    East
                   </button>
                   <button
-                    onClick={() => setSelectedHub('Central / Heritage')}
-                    className={`min-h-[38px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
-                      selectedHub === 'Central / Heritage'
+                    onClick={() => setSelectedHub('West')}
+                    className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+                      selectedHub === 'West'
                         ? 'bg-white text-[#00685f] shadow-xs'
                         : 'text-[#3d4947] hover:text-[#131b2e]'
                     }`}
                   >
-                    Tiong Bahru
+                    West
                   </button>
                 </div>
+
+                <div className="text-xs text-[#3d4947] font-medium hidden sm:block">
+                  Total <span className="font-bold text-[#131b2e]">{clinics.length}</span> clinics on file
+                </div>
+              </div>
+
+              {/* Alert / Notice if region filter is active and other regions have matches */}
+              {queryTrimmed && selectedHub !== 'ALL' && filteredClinics.length === 0 && islandWideMatchingClinics.length > 0 && (
+                <div className="p-3 bg-[#e0f2fe] border border-[#7dd3fc] rounded-lg text-xs text-[#0369a1] flex flex-wrap items-center justify-between gap-2">
+                  <span>
+                    No matches in <strong>{selectedHub}</strong>, but <strong>{islandWideMatchingClinics.length}</strong> matching clinics found in other Singapore regions!
+                  </span>
+                  <button
+                    onClick={() => setSelectedHub('ALL')}
+                    className="px-3 py-1 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-md font-semibold whitespace-nowrap cursor-pointer"
+                  >
+                    View All Island ({islandWideMatchingClinics.length})
+                  </button>
+                </div>
+              )}
+
+              {queryTrimmed && selectedHub !== 'ALL' && filteredClinics.length > 0 && islandWideMatchingClinics.length > filteredClinics.length && (
+                <div className="flex items-center justify-between text-xs text-[#3d4947] bg-[#f2f3ff] px-3 py-1.5 rounded-md">
+                  <span>
+                    Showing {filteredClinics.length} in <strong>{selectedHub}</strong> ({islandWideMatchingClinics.length - filteredClinics.length} more in other regions)
+                  </span>
+                  <button
+                    onClick={() => setSelectedHub('ALL')}
+                    className="text-[#00685f] hover:underline font-semibold cursor-pointer"
+                  >
+                    Show All Island ({islandWideMatchingClinics.length})
+                  </button>
+                </div>
+              )}
+
+              {/* Quick Browse Tags for Instant Discovery */}
+              <div className="flex items-center gap-1.5 overflow-x-auto text-[11px] pt-1 border-t border-[#e2e7ff]/70">
+                <span className="text-[#6d7a77] font-semibold whitespace-nowrap">Quick Browse:</span>
+                <button 
+                  onClick={() => { setSearchQuery(''); setSelectedHub('ALL'); setStatusFilter('ALL'); }}
+                  className="px-2.5 py-1 bg-[#f2f3ff] hover:bg-[#eaedff] text-[#131b2e] rounded-md font-medium whitespace-nowrap cursor-pointer"
+                >
+                  All ({clinics.length})
+                </button>
+                <button 
+                  onClick={() => { setSearchQuery('Dermatology'); setSelectedHub('ALL'); }}
+                  className="px-2.5 py-1 bg-[#f2f3ff] hover:bg-[#eaedff] text-[#131b2e] rounded-md font-medium whitespace-nowrap cursor-pointer"
+                >
+                  Dermatology & Skin
+                </button>
+                <button 
+                  onClick={() => { setSearchQuery('Raffles'); setSelectedHub('ALL'); }}
+                  className="px-2.5 py-1 bg-[#f2f3ff] hover:bg-[#eaedff] text-[#131b2e] rounded-md font-medium whitespace-nowrap cursor-pointer"
+                >
+                  Raffles Medical
+                </button>
+                <button 
+                  onClick={() => { setSearchQuery('Polyclinic'); setSelectedHub('ALL'); }}
+                  className="px-2.5 py-1 bg-[#f2f3ff] hover:bg-[#eaedff] text-[#131b2e] rounded-md font-medium whitespace-nowrap cursor-pointer"
+                >
+                  Polyclinics
+                </button>
+                <button 
+                  onClick={() => { setSearchQuery('Specialist'); setSelectedHub('ALL'); }}
+                  className="px-2.5 py-1 bg-[#f2f3ff] hover:bg-[#eaedff] text-[#131b2e] rounded-md font-medium whitespace-nowrap cursor-pointer"
+                >
+                  Specialist Suites
+                </button>
+                <button 
+                  onClick={() => { setSearchQuery('Minmed'); setSelectedHub('ALL'); }}
+                  className="px-2.5 py-1 bg-[#f2f3ff] hover:bg-[#eaedff] text-[#131b2e] rounded-md font-medium whitespace-nowrap cursor-pointer"
+                >
+                  Minmed
+                </button>
+                <button 
+                  onClick={() => { setSearchQuery('Healthway'); setSelectedHub('ALL'); }}
+                  className="px-2.5 py-1 bg-[#f2f3ff] hover:bg-[#eaedff] text-[#131b2e] rounded-md font-medium whitespace-nowrap cursor-pointer"
+                >
+                  Healthway
+                </button>
               </div>
 
               {/* Status Secondary Filter Buttons */}
@@ -450,23 +624,47 @@ export default function App() {
               ))}
             </div>
 
+            {/* Empty State with 1-click Add Clinic */}
             {filteredClinics.length === 0 && (
-              <div className="bg-[#ffffff] border border-[#e2e7ff] rounded-xl p-10 text-center">
-                <Stethoscope className="w-12 h-12 text-[#6d7a77] mx-auto mb-2 opacity-40" />
-                <h3 className="text-base font-bold text-[#131b2e]">No Matching Clinics Found</h3>
-                <p className="text-xs text-[#3d4947] max-w-sm mx-auto mt-1">
-                  Adjust your search keywords or reset filter tags to browse the full territory database.
-                </p>
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedHub('ALL');
-                    setStatusFilter('ALL');
-                  }}
-                  className="mt-4 min-h-[44px] px-4 py-2 bg-[#00685f] text-white rounded-lg text-xs font-semibold hover:bg-[#005049] cursor-pointer"
-                >
-                  Reset Filters
-                </button>
+              <div className="bg-[#ffffff] border border-[#e2e7ff] rounded-2xl p-8 sm:p-12 text-center max-w-xl mx-auto shadow-xs space-y-4">
+                <div className="w-14 h-14 rounded-full bg-[#f2f3ff] text-[#00685f] flex items-center justify-center mx-auto">
+                  <Building className="w-7 h-7" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-[#131b2e]">
+                    {queryTrimmed ? `No Pre-Configured Clinic Found for "${searchQuery}"` : 'No Clinics Matching Filters'}
+                  </h3>
+                  <p className="text-xs text-[#3d4947] max-w-md mx-auto mt-1.5 leading-relaxed">
+                    {queryTrimmed
+                      ? `If "${searchQuery}" is a clinic location in your territory, you can add it right now. Enter its postal code to auto-detect its town and planning region.`
+                      : 'Try resetting your region or status filters to browse all Singapore clinic locations.'}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                  {queryTrimmed && (
+                    <button
+                      onClick={() => {
+                        setAddClinicInitialName(searchQuery.trim());
+                        setIsAddClinicOpen(true);
+                      }}
+                      className="min-h-[44px] px-5 py-2.5 bg-[#00685f] hover:bg-[#005048] text-white rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2 shadow-xs cursor-pointer transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add "{searchQuery}" as New Clinic</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedHub('ALL');
+                      setStatusFilter('ALL');
+                    }}
+                    className="min-h-[44px] px-4 py-2 border border-[#bcc9c6] text-[#3d4947] hover:bg-[#f2f3ff] rounded-lg text-xs font-semibold cursor-pointer"
+                  >
+                    View All Singapore Clinics ({clinics.length})
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -619,6 +817,14 @@ export default function App() {
         bagSamples={bagSamples}
         onClose={() => setVisitLogClinic(null)}
         onSaveVisit={handleSaveVisit}
+      />
+
+      {/* Add New Clinic to Territory Modal */}
+      <AddClinicModal
+        isOpen={isAddClinicOpen}
+        onClose={() => setIsAddClinicOpen(false)}
+        onAddClinic={handleAddClinic}
+        initialName={addClinicInitialName}
       />
 
       {/* Operational Toast Feedback */}

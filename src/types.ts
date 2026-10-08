@@ -1,4 +1,9 @@
 export type HubRegion = 
+  | 'Central Region' 
+  | 'East Region' 
+  | 'West Region' 
+  | 'North Region' 
+  | 'North-East Region'
   | 'Novena Hub' 
   | 'Orchard / Tanglin' 
   | 'Heartlands East' 
@@ -72,6 +77,8 @@ export interface Clinic {
   address: string;
   postalCode: string;
   hub: HubRegion;
+  region: 'Central' | 'East' | 'West' | 'North' | 'North-East';
+  town: string;
   clinicType: 'Private Specialist Suite' | 'Hospital Specialist Centre' | 'Shophouse GP Practice' | 'Polyclinic Cluster Partner';
   status: ClinicStatus;
   visitingWindow: string;

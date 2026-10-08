@@ -19,15 +19,26 @@ export const SingaporeMap: React.FC<SingaporeMapProps> = ({
   onToggleRoute,
   onCall,
 }) => {
-  const [activeZone, setActiveZone] = useState<'ALL' | 'NOVENA' | 'ORCHARD' | 'EAST' | 'WEST'>('ALL');
+  const [activeZone, setActiveZone] = useState<'ALL' | 'Central' | 'North' | 'North-East' | 'East' | 'West'>('ALL');
   const [showTransitLines, setShowTransitLines] = useState(true);
 
   // Filter clinics based on active zone
   const filteredClinics = clinics.filter(c => {
-    if (activeZone === 'NOVENA') return c.hub === 'Novena Hub';
-    if (activeZone === 'ORCHARD') return c.hub === 'Orchard / Tanglin';
-    if (activeZone === 'EAST') return c.hub === 'Heartlands East';
-    if (activeZone === 'WEST') return c.hub === 'Heartlands West';
+    if (activeZone === 'Central') {
+      return c.region === 'Central' || c.hub.includes('Central') || c.hub === 'Novena Hub' || c.hub === 'Orchard / Tanglin';
+    }
+    if (activeZone === 'North') {
+      return c.region === 'North' || c.hub.includes('North');
+    }
+    if (activeZone === 'North-East') {
+      return c.region === 'North-East' || c.hub.includes('North-East');
+    }
+    if (activeZone === 'East') {
+      return c.region === 'East' || c.hub.includes('East');
+    }
+    if (activeZone === 'West') {
+      return c.region === 'West' || c.hub.includes('West');
+    }
     return true;
   });
 
@@ -77,44 +88,54 @@ export const SingaporeMap: React.FC<SingaporeMapProps> = ({
             All Island
           </button>
           <button
-            onClick={() => setActiveZone('NOVENA')}
+            onClick={() => setActiveZone('Central')}
             className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
-              activeZone === 'NOVENA'
+              activeZone === 'Central'
                 ? 'bg-[#00685f] text-white shadow-xs'
                 : 'text-[#3d4947] hover:text-[#131b2e]'
             }`}
           >
-            Novena Hub
+            Central
           </button>
           <button
-            onClick={() => setActiveZone('ORCHARD')}
+            onClick={() => setActiveZone('North')}
             className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
-              activeZone === 'ORCHARD'
+              activeZone === 'North'
                 ? 'bg-[#00685f] text-white shadow-xs'
                 : 'text-[#3d4947] hover:text-[#131b2e]'
             }`}
           >
-            Orchard
+            North
           </button>
           <button
-            onClick={() => setActiveZone('EAST')}
+            onClick={() => setActiveZone('North-East')}
             className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
-              activeZone === 'EAST'
+              activeZone === 'North-East'
                 ? 'bg-[#00685f] text-white shadow-xs'
                 : 'text-[#3d4947] hover:text-[#131b2e]'
             }`}
           >
-            East Coast
+            North-East
           </button>
           <button
-            onClick={() => setActiveZone('WEST')}
+            onClick={() => setActiveZone('East')}
             className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
-              activeZone === 'WEST'
+              activeZone === 'East'
                 ? 'bg-[#00685f] text-white shadow-xs'
                 : 'text-[#3d4947] hover:text-[#131b2e]'
             }`}
           >
-            West Hub
+            East
+          </button>
+          <button
+            onClick={() => setActiveZone('West')}
+            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
+              activeZone === 'West'
+                ? 'bg-[#00685f] text-white shadow-xs'
+                : 'text-[#3d4947] hover:text-[#131b2e]'
+            }`}
+          >
+            West
           </button>
         </div>
 

@@ -46,8 +46,8 @@ export const ClinicCard: React.FC<ClinicCardProps> = ({
         <div className="p-4 sm:p-5 pb-3">
           {/* Unboxed Metadata Kicker (Anti-Pill Rule) */}
           <div className="flex items-center justify-between text-xs text-[#3d4947] mb-2">
-            <div className="flex items-center gap-1.5 font-medium">
-              <span>{clinic.hub}</span>
+            <div className="flex items-center gap-1.5 font-medium flex-wrap">
+              <span className="font-semibold text-[#00685f]">{clinic.region} · {clinic.town}</span>
               <span aria-hidden="true" className="text-[#bcc9c6]">·</span>
               <span>{clinic.clinicType}</span>
               <span aria-hidden="true" className="text-[#bcc9c6]">·</span>
