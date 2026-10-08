@@ -32,8 +32,8 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="text-base sm:text-lg font-bold tracking-tight text-[#131b2e] group-hover:text-[#00685f] transition-colors leading-tight">
               Clinical Field App
             </div>
-            <div className="text-[10px] sm:text-[11px] text-[#3d4947] tracking-wider uppercase font-semibold">
-              Singapore Rep Suite
+            <div className="text-[10px] sm:text-[11px] text-[#00685f] tracking-wider uppercase font-semibold">
+              Suu Balm Clinical Suite
             </div>
           </button>
         </div>
@@ -115,9 +115,9 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 truncate">
             <span className="w-2 h-2 rounded-full bg-[#059669] animate-pulse shrink-0"></span>
-            <span className="font-medium text-[#131b2e] truncate">SG Central & Novena</span>
+            <span className="font-medium text-[#131b2e] truncate">Suu Balm SG Network · NSC Formulated</span>
             <span className="text-[#6d7a77] hidden md:inline">·</span>
-            <span className="text-[#3d4947] hidden md:inline">Visiting Window: 12:30 PM – 2:30 PM</span>
+            <span className="text-[#3d4947] hidden md:inline">Peak Visiting Window: 12:30 PM – 2:30 PM</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 tabular-nums font-mono text-[10px] sm:text-[11px] shrink-0">
             <span className="text-[#00685f] font-semibold flex items-center gap-1">
@@ -125,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span>{completedStopsCount}/{totalStopsCount} Done</span>
             </span>
             <span className="text-[#6d7a77] hidden xs:inline">|</span>
-            <span className="text-[#3d4947] hidden xs:inline">4.2°C Cold Chain</span>
+            <span className="text-[#3d4947] hidden xs:inline">Ambient Pod: 23.4°C</span>
           </div>
         </div>
       </div>

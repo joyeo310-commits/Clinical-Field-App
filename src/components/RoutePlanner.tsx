@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clinic, RouteStop } from '../types';
+import { Clinic, RouteStop, BagSampleItem } from '../types';
 import { 
   Navigation, 
   Clock, 
@@ -19,6 +19,7 @@ import {
 interface RoutePlannerProps {
   clinics: Clinic[];
   routeStops: RouteStop[];
+  bagSamples?: BagSampleItem[];
   onUpdateStops: (newStops: RouteStop[]) => void;
   onSelectClinic: (clinic: Clinic) => void;
   onLogVisit: (clinic: Clinic) => void;
@@ -29,6 +30,7 @@ interface RoutePlannerProps {
 export const RoutePlanner: React.FC<RoutePlannerProps> = ({
   clinics,
   routeStops,
+  bagSamples = [],
   onUpdateStops,
   onSelectClinic,
   onLogVisit,
@@ -40,6 +42,7 @@ export const RoutePlanner: React.FC<RoutePlannerProps> = ({
   const completedCount = routeStops.filter(s => s.status === 'COMPLETED').length;
   const inProgressStop = routeStops.find(s => s.status === 'IN_PROGRESS');
   const totalTransitMinutes = routeStops.reduce((acc, s) => acc + s.transitMinutesFromPrev, 0);
+  const totalBagUnits = bagSamples.reduce((acc, s) => acc + s.quantityInBag, 0);
 
   const handleMoveUp = (index: number) => {
     if (index === 0) return;
@@ -152,12 +155,12 @@ export const RoutePlanner: React.FC<RoutePlannerProps> = ({
           </div>
 
           <div className="bg-[#f2f3ff] p-3 rounded-lg">
-            <div className="text-[11px] text-[#3d4947] font-medium">Sample Drop Target</div>
+            <div className="text-[11px] text-[#3d4947] font-medium">Suu Balm Sample Trunk</div>
             <div className="text-2xl font-bold text-[#131b2e] font-mono tabular-nums mt-0.5">
-              15 Units
+              {totalBagUnits} Units
             </div>
             <div className="text-[11px] text-[#059669] font-semibold mt-0.5">
-              11 Units Available in Bag
+              Rapid Itch Starter Tubes
             </div>
           </div>
         </div>

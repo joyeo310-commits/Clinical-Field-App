@@ -534,6 +534,7 @@ export default function App() {
           <RoutePlanner
             clinics={clinics}
             routeStops={routeStops}
+            bagSamples={bagSamples}
             onUpdateStops={setRouteStops}
             onSelectClinic={c => setSelectedClinic(c)}
             onLogVisit={c => setVisitLogClinic(c)}

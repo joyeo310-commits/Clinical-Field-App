@@ -49,26 +49,26 @@ export const SampleBagManager: React.FC<SampleBagManagerProps> = ({
     }));
     onUpdateSamples(updated);
     setReplenishModal(false);
-    onToast('Trunk stock restocked from Tuas Central Warehouse depot.');
+    onToast('Trunk stock restocked from Suu Balm Singapore Central Warehouse depot.');
   };
 
   return (
     <div className="space-y-6">
-      {/* Top Banner: HSA Compliance & Cold Chain Monitor */}
+      {/* Top Banner: HSA Compliance & Climate Storage Monitor */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Cold Chain Sensor Box */}
+        {/* Climate Storage Sensor Box */}
         <div className="bg-[#ffffff] border border-[#e2e7ff] rounded-xl p-4 shadow-xs flex items-center justify-between">
           <div>
             <div className="flex items-center gap-1.5 text-xs font-semibold text-[#00685f]">
               <Thermometer className="w-4 h-4 text-[#00685f]" />
-              <span>COLD CHAIN TELEMETRY</span>
+              <span>CLIMATE STORAGE TELEMETRY</span>
             </div>
             <div className="text-2xl font-bold font-mono tabular-nums text-[#131b2e] mt-1">
-              {coldChainSample?.storageTempCelsius ?? 4.2}°C
+              23.4°C
             </div>
             <div className="text-[11px] text-[#059669] font-medium flex items-center gap-1 mt-0.5">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Within 2.0°C – 8.0°C Validated Range</span>
+              <span>Within Validated &lt; 30°C Tropical Shelf Stability</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-full bg-[#f2f3ff] border border-[#dae2fd] flex items-center justify-center text-[#00685f] font-mono font-bold text-xs">
@@ -81,13 +81,13 @@ export const SampleBagManager: React.FC<SampleBagManagerProps> = ({
           <div>
             <div className="flex items-center gap-1.5 text-xs font-semibold text-[#006398]">
               <ShieldCheck className="w-4 h-4 text-[#006398]" />
-              <span>HSA SINGAPORE COMPLIANCE</span>
+              <span>HSA SINGAPORE DERMATOLOGY</span>
             </div>
             <div className="text-lg font-bold text-[#131b2e] mt-1">
-              Good Distribution Practice (GDP)
+              National Skin Centre (NSC) Formulated
             </div>
             <div className="text-[11px] text-[#3d4947] mt-0.5">
-              Daily Rep Sample Log Active · Lot verification synced
+              Daily Rep Sample Log Active · CPNP Lot Verification
             </div>
           </div>
           <div className="w-12 h-12 rounded-full bg-[#eaedff] border border-[#bcc9c6] flex items-center justify-center text-[#006398]">
@@ -100,7 +100,7 @@ export const SampleBagManager: React.FC<SampleBagManagerProps> = ({
           <div>
             <div className="flex items-center gap-1.5 text-xs font-semibold text-[#006948]">
               <Package className="w-4 h-4 text-[#006948]" />
-              <span>BAG ALLOCATION BALANCE</span>
+              <span>SUU BALM SAMPLE BALANCE</span>
             </div>
             <div className="text-2xl font-bold font-mono tabular-nums text-[#131b2e] mt-1">
               {totalUnitsInBag} Units
@@ -124,10 +124,10 @@ export const SampleBagManager: React.FC<SampleBagManagerProps> = ({
         <div className="p-4 sm:p-5 border-b border-[#e2e7ff] flex flex-wrap items-center justify-between gap-3 bg-[#faf8ff]">
           <div>
             <h3 className="text-base font-bold text-[#131b2e]">
-              Field Representative Sample Trunk & Dispensation Register
+              Suu Balm Representative Sample Trunk & Dispensation Register
             </h3>
             <p className="text-xs text-[#3d4947] mt-0.5">
-              Authorized prescription drug samples for physical medical detailing in Singapore healthcare practices.
+              Official dermatological sample stock for clinic trials (suubalm.com) across Singapore specialist suites.
             </p>
           </div>
 
@@ -310,7 +310,8 @@ export const SampleBagManager: React.FC<SampleBagManagerProps> = ({
 
             <div className="text-xs text-[#3d4947] space-y-3 font-mono">
               <div className="bg-[#f2f3ff] p-3 rounded-lg space-y-1">
-                <div>REP: Marcus Lee (ID: SG-REP-4402)</div>
+                <div>BRAND: Suu Balm (Good Pharma Dermatology · suubalm.com)</div>
+                <div>REP: Marcus Lee (Dermatology Specialist SG-REP-4402)</div>
                 <div>TERRITORY: Singapore Central & Novena Cluster</div>
                 <div>DATE: 2026-10-08 · SESSION: Morning Field Rotation</div>
                 <div>DISTRIBUTION LICENCE: TS-HSA-88219-B</div>
