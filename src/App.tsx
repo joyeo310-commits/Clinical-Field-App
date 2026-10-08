@@ -286,7 +286,7 @@ export default function App() {
   });
 
   return (
-    <div className="min-h-screen bg-[#faf8ff] text-[#131b2e] flex flex-col font-sans pb-24 md:pb-12">
+    <div className="min-h-screen bg-[#faf8ff] text-[#131b2e] flex flex-col font-sans pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-12">
       {/* Top Bar Header */}
       <Header
         activeTab={activeTab}
@@ -553,48 +553,52 @@ export default function App() {
       </main>
 
       {/* Floating Bottom Navigation Bar for Mobile (Strict Pattern 1 from Mobile Skill) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#ffffff]/95 backdrop-blur-md border-t border-[#e2e7ff] h-16 grid grid-cols-4 items-center px-2 shadow-lg">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#ffffff]/95 backdrop-blur-md border-t border-[#e2e7ff] h-[calc(4rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] grid grid-cols-4 items-center px-1 shadow-lg">
         <button
           onClick={() => setActiveTab('feed')}
-          className={`flex flex-col items-center justify-center min-h-[44px] transition-colors ${
-            activeTab === 'feed' ? 'text-[#00685f]' : 'text-[#6d7a77]'
+          className={`flex flex-col items-center justify-center min-h-[44px] transition-all cursor-pointer active:scale-95 ${
+            activeTab === 'feed' ? 'text-[#00685f]' : 'text-[#6d7a77] hover:text-[#131b2e]'
           }`}
         >
           <MapPin className="w-5 h-5" />
           <span className="text-[10px] font-semibold mt-0.5">Clinics</span>
+          {activeTab === 'feed' && <span className="w-1 h-1 rounded-full bg-[#00685f] mt-0.5" />}
         </button>
 
         <button
           onClick={() => setActiveTab('map')}
-          className={`flex flex-col items-center justify-center min-h-[44px] transition-colors ${
-            activeTab === 'map' ? 'text-[#00685f]' : 'text-[#6d7a77]'
+          className={`flex flex-col items-center justify-center min-h-[44px] transition-all cursor-pointer active:scale-95 ${
+            activeTab === 'map' ? 'text-[#00685f]' : 'text-[#6d7a77] hover:text-[#131b2e]'
           }`}
         >
           <Navigation className="w-5 h-5" />
           <span className="text-[10px] font-semibold mt-0.5">Map</span>
+          {activeTab === 'map' && <span className="w-1 h-1 rounded-full bg-[#00685f] mt-0.5" />}
         </button>
 
         <button
           onClick={() => setActiveTab('schedule')}
-          className={`flex flex-col items-center justify-center min-h-[44px] transition-colors relative ${
-            activeTab === 'schedule' ? 'text-[#00685f]' : 'text-[#6d7a77]'
+          className={`flex flex-col items-center justify-center min-h-[44px] transition-all cursor-pointer relative active:scale-95 ${
+            activeTab === 'schedule' ? 'text-[#00685f]' : 'text-[#6d7a77] hover:text-[#131b2e]'
           }`}
         >
           <Calendar className="w-5 h-5" />
           <span className="text-[10px] font-semibold mt-0.5">Route</span>
-          <span className="absolute top-1 right-5 w-4 h-4 rounded-full bg-[#00685f] text-white font-mono text-[9px] flex items-center justify-center font-bold">
+          <span className="absolute top-1 right-5 sm:right-6 w-4 h-4 rounded-full bg-[#00685f] text-white font-mono text-[9px] flex items-center justify-center font-bold">
             {routeStops.length}
           </span>
+          {activeTab === 'schedule' && <span className="w-1 h-1 rounded-full bg-[#00685f] mt-0.5" />}
         </button>
 
         <button
           onClick={() => setActiveTab('samples')}
-          className={`flex flex-col items-center justify-center min-h-[44px] transition-colors ${
-            activeTab === 'samples' ? 'text-[#00685f]' : 'text-[#6d7a77]'
+          className={`flex flex-col items-center justify-center min-h-[44px] transition-all cursor-pointer active:scale-95 ${
+            activeTab === 'samples' ? 'text-[#00685f]' : 'text-[#6d7a77] hover:text-[#131b2e]'
           }`}
         >
           <Package className="w-5 h-5" />
           <span className="text-[10px] font-semibold mt-0.5">Samples</span>
+          {activeTab === 'samples' && <span className="w-1 h-1 rounded-full bg-[#00685f] mt-0.5" />}
         </button>
       </nav>
 

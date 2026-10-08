@@ -152,7 +152,7 @@ export const ClinicCard: React.FC<ClinicCardProps> = ({
         {/* Route Toggle */}
         <button
           onClick={() => onToggleRoute(clinic)}
-          className={`min-h-[44px] px-3.5 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer active:scale-95 ${
+          className={`min-h-[44px] px-2.5 sm:px-3.5 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer active:scale-95 whitespace-nowrap ${
             clinic.inTodayRoute
               ? 'bg-[#eaedff] text-[#00685f] border border-[#00685f]/30'
               : 'border border-[#bcc9c6] text-[#3d4947] hover:text-[#131b2e] hover:bg-[#f2f3ff]'
@@ -161,35 +161,37 @@ export const ClinicCard: React.FC<ClinicCardProps> = ({
         >
           {clinic.inTodayRoute ? (
             <>
-              <Check className="w-3.5 h-3.5 text-[#00685f]" />
-              <span>In Today's Route</span>
+              <Check className="w-3.5 h-3.5 text-[#00685f] shrink-0" />
+              <span className="hidden xs:inline">In Route</span>
+              <span className="xs:hidden">Route</span>
             </>
           ) : (
             <>
-              <Plus className="w-3.5 h-3.5 text-[#00685f]" />
-              <span>Add to Route</span>
+              <Plus className="w-3.5 h-3.5 text-[#00685f] shrink-0" />
+              <span className="hidden xs:inline">Add to Route</span>
+              <span className="xs:hidden">Add</span>
             </>
           )}
         </button>
 
         {/* Primary View Details / Log */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             onClick={() => onLogVisit(clinic)}
-            className="min-h-[44px] px-3 py-2 bg-[#f2f3ff] hover:bg-[#dae2fd] text-[#00685f] rounded-lg transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer active:scale-95"
+            className="min-h-[44px] px-2.5 sm:px-3 py-2 bg-[#f2f3ff] hover:bg-[#dae2fd] text-[#00685f] rounded-lg transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer active:scale-95 whitespace-nowrap"
             title="Log rep interaction with this clinic"
           >
-            <FileText className="w-3.5 h-3.5" />
+            <FileText className="w-3.5 h-3.5 shrink-0" />
             <span className="hidden xs:inline">Log Visit</span>
           </button>
 
           <button
             onClick={() => onSelect(clinic)}
-            className="min-h-[44px] px-3.5 py-2 bg-[#00685f] text-white hover:bg-[#005049] rounded-lg transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer shadow-xs active:scale-95"
+            className="min-h-[44px] px-3 sm:px-3.5 py-2 bg-[#00685f] text-white hover:bg-[#005049] rounded-lg transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
             title="View complete specialist intelligence and history"
           >
             <span>Detail</span>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <ChevronRight className="w-3.5 h-3.5 shrink-0" />
           </button>
         </div>
       </div>

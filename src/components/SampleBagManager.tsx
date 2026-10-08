@@ -142,7 +142,73 @@ export const SampleBagManager: React.FC<SampleBagManagerProps> = ({
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Mobile View: High-clarity touch cards */}
+        <div className="block sm:hidden divide-y divide-[#e2e7ff]">
+          {samples.map(item => (
+            <div key={item.id} className="p-4 space-y-3 bg-[#ffffff]">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    {item.coldChainRequired && (
+                      <span className="text-xs" title="Cold Chain Regulated">❄️</span>
+                    )}
+                    <h4 className="text-sm font-bold text-[#131b2e] leading-tight">
+                      {item.name}
+                    </h4>
+                  </div>
+                  <div className="text-xs text-[#3d4947] mt-0.5">{item.dosage}</div>
+                  <div className="text-[11px] text-[#6d7a77]">{item.therapeuticArea}</div>
+                </div>
+
+                <div className="text-right shrink-0">
+                  <span className="text-xs font-mono font-bold text-[#00685f]">
+                    {item.allocatedToday} alloc.
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-[#3d4947] font-mono bg-[#f2f3ff] p-2.5 rounded-lg">
+                <div>
+                  <span className="text-[#6d7a77] block text-[10px]">LOT NUMBER</span>
+                  <span className="font-semibold text-[#131b2e]">{item.lotNumber}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[#6d7a77] block text-[10px]">EXPIRY</span>
+                  <span>{item.expiryDate}</span>
+                </div>
+              </div>
+
+              {/* Quantity Adjuster with 44px touch targets */}
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-xs font-semibold text-[#131b2e]">
+                  Available in Bag:
+                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => handleAdjustQuantity(item.id, -1)}
+                    className="min-h-[44px] min-w-[44px] rounded-lg border border-[#bcc9c6] bg-[#f8faff] active:bg-[#dae2fd] flex items-center justify-center font-bold text-sm cursor-pointer"
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="font-mono font-bold text-lg tabular-nums min-w-[32px] text-center">
+                    {item.quantityInBag}
+                  </span>
+                  <button
+                    onClick={() => handleAdjustQuantity(item.id, 1)}
+                    className="min-h-[44px] min-w-[44px] rounded-lg border border-[#bcc9c6] bg-[#f8faff] active:bg-[#dae2fd] flex items-center justify-center font-bold text-sm cursor-pointer"
+                    aria-label="Increase quantity"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop View: Full Table */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-[#e2e7ff] text-[11px] font-semibold text-[#3d4947] bg-[#f2f3ff]/60 uppercase tracking-wider">

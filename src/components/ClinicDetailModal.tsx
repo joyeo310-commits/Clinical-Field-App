@@ -41,11 +41,14 @@ export const ClinicDetailModal: React.FC<ClinicDetailModalProps> = ({
   if (!clinic) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
       <div 
-        className="bg-[#ffffff] border border-[#e2e7ff] rounded-2xl max-w-3xl w-full my-auto overflow-hidden shadow-2xl flex flex-col max-h-[92vh]"
+        className="bg-[#ffffff] border-t sm:border border-[#e2e7ff] rounded-t-3xl sm:rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[90vh] animate-in slide-in-from-bottom duration-200"
         onClick={e => e.stopPropagation()}
       >
+        {/* Mobile Drag Handle Affordance */}
+        <div className="w-10 h-1.5 bg-[#bcc9c6] rounded-full mx-auto mt-2.5 mb-1 sm:hidden shrink-0" />
+
         {/* Modal Header with Image & Overview */}
         <div className="relative">
           {/* Hero Image Container with Zero-Broken-Image fallback */}

@@ -64,11 +64,11 @@ export const SingaporeMap: React.FC<SingaporeMapProps> = ({
           </div>
         </div>
 
-        {/* Region Quick Filters (functional buttons) */}
-        <div className="flex items-center gap-1 bg-[#ffffff] p-1 rounded-lg border border-[#e2e7ff] text-xs">
+        {/* Region Quick Filters (functional buttons with smooth mobile horizontal scroll) */}
+        <div className="flex items-center gap-1 bg-[#ffffff] p-1 rounded-lg border border-[#e2e7ff] text-xs max-w-full overflow-x-auto shrink-0">
           <button
             onClick={() => setActiveZone('ALL')}
-            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors ${
+            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
               activeZone === 'ALL'
                 ? 'bg-[#00685f] text-white shadow-xs'
                 : 'text-[#3d4947] hover:text-[#131b2e]'
@@ -78,7 +78,7 @@ export const SingaporeMap: React.FC<SingaporeMapProps> = ({
           </button>
           <button
             onClick={() => setActiveZone('NOVENA')}
-            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors ${
+            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
               activeZone === 'NOVENA'
                 ? 'bg-[#00685f] text-white shadow-xs'
                 : 'text-[#3d4947] hover:text-[#131b2e]'
@@ -88,7 +88,7 @@ export const SingaporeMap: React.FC<SingaporeMapProps> = ({
           </button>
           <button
             onClick={() => setActiveZone('ORCHARD')}
-            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors ${
+            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
               activeZone === 'ORCHARD'
                 ? 'bg-[#00685f] text-white shadow-xs'
                 : 'text-[#3d4947] hover:text-[#131b2e]'
@@ -98,7 +98,7 @@ export const SingaporeMap: React.FC<SingaporeMapProps> = ({
           </button>
           <button
             onClick={() => setActiveZone('EAST')}
-            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors ${
+            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
               activeZone === 'EAST'
                 ? 'bg-[#00685f] text-white shadow-xs'
                 : 'text-[#3d4947] hover:text-[#131b2e]'
@@ -108,7 +108,7 @@ export const SingaporeMap: React.FC<SingaporeMapProps> = ({
           </button>
           <button
             onClick={() => setActiveZone('WEST')}
-            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors ${
+            className={`min-h-[36px] px-3 py-1 font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
               activeZone === 'WEST'
                 ? 'bg-[#00685f] text-white shadow-xs'
                 : 'text-[#3d4947] hover:text-[#131b2e]'
@@ -121,7 +121,7 @@ export const SingaporeMap: React.FC<SingaporeMapProps> = ({
         {/* Route Overlay Toggle */}
         <button
           onClick={() => setShowTransitLines(!showTransitLines)}
-          className={`min-h-[36px] px-3 py-1 text-xs font-semibold rounded-lg border flex items-center gap-1.5 transition-colors cursor-pointer ${
+          className={`min-h-[36px] px-3 py-1 text-xs font-semibold rounded-lg border flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
             showTransitLines
               ? 'bg-[#eaedff] border-[#00685f] text-[#00685f]'
               : 'border-[#bcc9c6] text-[#3d4947] bg-white'
@@ -132,8 +132,8 @@ export const SingaporeMap: React.FC<SingaporeMapProps> = ({
         </button>
       </div>
 
-      {/* Main SVG Map Canvas */}
-      <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] bg-[#eaedff]/30 overflow-hidden select-none">
+      {/* Main SVG Map Canvas (Ample height on mobile) */}
+      <div className="relative w-full aspect-[4/3] xs:aspect-[16/10] sm:aspect-[21/9] bg-[#eaedff]/30 overflow-hidden select-none">
         <svg
           viewBox="0 0 100 100"
           className="w-full h-full object-cover"

@@ -260,13 +260,13 @@ export const RoutePlanner: React.FC<RoutePlannerProps> = ({
                     </div>
                   </div>
 
-                  {/* Right: Actions & Status Toggles */}
-                  <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 self-end sm:self-center shrink-0">
+                  {/* Right: Actions & Status Toggles (Full width on mobile with edge-to-edge alignment) */}
+                  <div className="w-full sm:w-auto flex flex-wrap sm:flex-nowrap items-center justify-between sm:justify-end gap-2 pt-2.5 sm:pt-0 border-t sm:border-0 border-[#e2e7ff]/80 shrink-0">
                     {/* Status Toggle Buttons */}
                     {stop.status === 'PENDING' && (
                       <button
                         onClick={() => handleStatusChange(index, 'IN_PROGRESS')}
-                        className="min-h-[44px] px-3.5 py-2 bg-[#00685f] text-white hover:bg-[#005049] rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+                        className="flex-1 sm:flex-none min-h-[44px] px-3.5 py-2 bg-[#00685f] text-white hover:bg-[#005049] rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
                       >
                         <Play className="w-3.5 h-3.5" />
                         <span>Check In</span>
@@ -276,59 +276,61 @@ export const RoutePlanner: React.FC<RoutePlannerProps> = ({
                     {stop.status === 'IN_PROGRESS' && (
                       <button
                         onClick={() => onLogVisit(clinic)}
-                        className="min-h-[44px] px-3.5 py-2 bg-[#059669] text-white hover:bg-[#047857] rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+                        className="flex-1 sm:flex-none min-h-[44px] px-3.5 py-2 bg-[#059669] text-white hover:bg-[#047857] rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Complete Visit</span>
+                        <span>Complete</span>
                       </button>
                     )}
 
                     {stop.status === 'COMPLETED' && (
                       <button
                         onClick={() => handleStatusChange(index, 'PENDING')}
-                        className="min-h-[44px] px-3 py-2 border border-[#bcc9c6] text-[#3d4947] hover:bg-[#f2f3ff] rounded-lg text-xs font-medium cursor-pointer"
+                        className="flex-1 sm:flex-none min-h-[44px] px-3 py-2 border border-[#bcc9c6] text-[#3d4947] hover:bg-[#f2f3ff] rounded-lg text-xs font-medium cursor-pointer"
                       >
                         Re-open
                       </button>
                     )}
 
-                    {/* Quick Call */}
-                    <button
-                      onClick={() => onCall(clinic.phone, clinic.name)}
-                      className="min-h-[44px] min-w-[44px] px-2.5 py-2 border border-[#bcc9c6] text-[#131b2e] hover:bg-[#f2f3ff] rounded-lg text-xs font-medium flex items-center justify-center cursor-pointer"
-                      title={`Call ${clinic.receptionistName}`}
-                    >
-                      <Phone className="w-3.5 h-3.5 text-[#006398]" />
-                    </button>
-
-                    {/* Reordering Controls */}
-                    <div className="flex items-center border border-[#bcc9c6] rounded-lg overflow-hidden bg-[#ffffff]">
+                    <div className="flex items-center gap-1.5">
+                      {/* Quick Call */}
                       <button
-                        onClick={() => handleMoveUp(index)}
-                        disabled={index === 0}
-                        className="min-h-[44px] min-w-[36px] px-2 hover:bg-[#f2f3ff] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer"
-                        title="Move Up"
+                        onClick={() => onCall(clinic.phone, clinic.name)}
+                        className="min-h-[44px] min-w-[44px] px-2.5 py-2 border border-[#bcc9c6] text-[#131b2e] hover:bg-[#f2f3ff] rounded-lg text-xs font-medium flex items-center justify-center cursor-pointer"
+                        title={`Call ${clinic.receptionistName}`}
                       >
-                        <ArrowUp className="w-3.5 h-3.5 text-[#131b2e]" />
+                        <Phone className="w-3.5 h-3.5 text-[#006398]" />
                       </button>
+
+                      {/* Reordering Controls */}
+                      <div className="flex items-center border border-[#bcc9c6] rounded-lg overflow-hidden bg-[#ffffff]">
+                        <button
+                          onClick={() => handleMoveUp(index)}
+                          disabled={index === 0}
+                          className="min-h-[44px] min-w-[38px] px-2 hover:bg-[#f2f3ff] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer"
+                          title="Move Up"
+                        >
+                          <ArrowUp className="w-3.5 h-3.5 text-[#131b2e]" />
+                        </button>
+                        <button
+                          onClick={() => handleMoveDown(index)}
+                          disabled={index === routeStops.length - 1}
+                          className="min-h-[44px] min-w-[38px] px-2 hover:bg-[#f2f3ff] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center border-l border-[#bcc9c6] transition-colors cursor-pointer"
+                          title="Move Down"
+                        >
+                          <ArrowDown className="w-3.5 h-3.5 text-[#131b2e]" />
+                        </button>
+                      </div>
+
+                      {/* Remove from Route */}
                       <button
-                        onClick={() => handleMoveDown(index)}
-                        disabled={index === routeStops.length - 1}
-                        className="min-h-[44px] min-w-[36px] px-2 hover:bg-[#f2f3ff] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center border-l border-[#bcc9c6] transition-colors cursor-pointer"
-                        title="Move Down"
+                        onClick={() => handleRemove(index)}
+                        className="min-h-[44px] min-w-[38px] px-2 text-[#ba1a1a] hover:bg-[#ffdad6]/40 rounded-lg transition-colors cursor-pointer flex items-center justify-center"
+                        title="Remove from Route"
                       >
-                        <ArrowDown className="w-3.5 h-3.5 text-[#131b2e]" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
-
-                    {/* Remove from Route */}
-                    <button
-                      onClick={() => handleRemove(index)}
-                      className="min-h-[44px] min-w-[36px] px-2.5 text-[#ba1a1a] hover:bg-[#ffdad6]/40 rounded-lg transition-colors cursor-pointer flex items-center justify-center"
-                      title="Remove from Route"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
                   </div>
                 </div>
               </div>
